@@ -1,0 +1,59 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+
+import penguinsData from "../../assets/penguins.json";
+const penguins = penguinsData as any;
+
+
+const species = [...new Set(penguins.map((p: any) => p.species))].sort();
+---
+
+<Layout>
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-8">Liste des Espèces de Pingouins (Rendu Statique)</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Sélectionnez une espèce :</h2>
+      
+      <ul class="space-y-3">
+        {species.map((sp) => {
+          const speciesCount = penguins.filter((p: any) => p.species === sp).length;
+          
+          return (
+            <li class="border-b border-gray-200 pb-3">
+              <a 
+                href={`/rendu-statique/${sp}`}
+                class="flex justify-between items-center p-3 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+              >
+                <div>
+                  <span class="text-lg font-medium text-blue-600 hover:text-blue-800">
+                    {sp}
+                  </span>
+                </div>
+                <div class="text-gray-500 text-sm">
+                  {speciesCount} individus
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+    
+    <div class="mt-6 text-center space-x-4">
+      <a 
+        href="/slider"
+        class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        ← Vue d'ensemble
+      </a>
+      <a 
+        href="/rendu-dynamique"
+        class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      >
+        🔄 Version dynamique
+      </a>
+    </div>
+  </div>
+</Layout>

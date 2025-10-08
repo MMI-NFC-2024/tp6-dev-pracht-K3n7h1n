@@ -1,0 +1,154 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PlotFigure from "../../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+
+
+import penguins from "../../assets/penguins.json";
+
+
+
+export async function getStaticPaths() {
+
+  const species = [...new Set(penguins.map((p: any) => p.species))].sort();
+  
+
+  return species.map((sp) => ({
+    params: { species: sp },
+  }));
+}
+
+const { species } = Astro.params;
+
+
+const filteredPenguins = penguins.filter((penguin: any) => penguin.species === species);
+
+
+const plotOptions = {
+  grid: true,
+  marks: [
+    Plot.dot(filteredPenguins, {
+      x: "culmen_length_mm",
+      y: "culmen_depth_mm",
+      fill: "sex",
+      r: 4,
+      fillOpacity: 0.7,
+      tip: true
+    }),
+  ],
+  x: {
+    label: "Longueur du culmen (mm)",
+  },
+  y: {
+    label: "Profondeur du culmen (mm)",
+  },
+  color: {
+    legend: true
+  },
+  title: `Relation Longueur vs Profondeur du culmen - ${species}`,
+};
+
+
+const massPlotOptions = {
+  grid: true,
+  marks: [
+    Plot.rectY(filteredPenguins, Plot.binX({y: "count"}, {
+      x: "body_mass_g",
+      tip: true
+    })),
+  ],
+  x: {
+    label: "Masse corporelle (g)",
+  },
+  y: {
+    label: "Nombre d'individus",
+  },
+  title: `Distribution de la masse corporelle - ${species}`,
+};
+
+
+const flipperPlotOptions = {
+  grid: true,
+  marks: [
+    Plot.boxY(filteredPenguins.filter((p: any) => p.sex !== null), {
+      x: "sex",
+      y: "flipper_length_mm",
+      fill: "sex",
+    }),
+  ],
+  x: {
+    label: "Sexe",
+  },
+  y: {
+    label: "Longueur des nageoires (mm)",
+  },
+  color: {
+    legend: true
+  },
+  title: `Longueur des nageoires par sexe - ${species}`,
+};
+---
+
+<Layout>
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="mb-6">
+      <a 
+        href="/rendu-statique"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        ← Retour à la liste
+      </a>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center mb-2">Espèce : {species} (Rendu Statique)</h1>
+    <p class="text-center text-gray-600 mb-8">{filteredPenguins.length} pingouin(s) trouvé(s) pour l'espèce {species}</p>
+
+    <div class="grid gap-8">
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <PlotFigure options={plotOptions} />
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <PlotFigure options={massPlotOptions} />
+        </div>
+
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <PlotFigure options={flipperPlotOptions} />
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-8 bg-gray-50 rounded-lg p-6">
+      <h3 class="text-xl font-semibold mb-4">Statistiques pour {species}</h3>
+      <div class="grid md:grid-cols-3 gap-4 text-sm">
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Total d'individus</div>
+          <div class="text-2xl font-bold text-blue-600">{filteredPenguins.length}</div>
+        </div>
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Mâles</div>
+          <div class="text-2xl font-bold text-green-600">
+            {filteredPenguins.filter((p: any) => p.sex === 'MALE').length}
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Femelles</div>
+          <div class="text-2xl font-bold text-pink-600">
+            {filteredPenguins.filter((p: any) => p.sex === 'FEMALE').length}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-500">
+        📄 Cette page a été générée statiquement avec <code class="bg-gray-100 px-2 py-1 rounded">getStaticPaths</code>
+      </p>
+    </div>
+  </div>
+</Layout>
