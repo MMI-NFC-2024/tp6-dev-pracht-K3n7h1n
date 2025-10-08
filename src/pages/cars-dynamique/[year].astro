@@ -1,0 +1,138 @@
+---
+import Layout from "../../layouts/Layout.astro";
+export const prerender = false;
+import PlotFigure from "../../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+
+const { year } = Astro.params;
+
+// Import des données
+// @ts-ignore
+import carsData from "../../assets/cars.json";
+const cars = carsData as any;
+
+// Filtrer les voitures pour l'année spécifiée
+const filteredCars = cars.filter((car: any) => car.year.toString() === year);
+
+// Configuration du graphique principal : Puissance vs Poids
+const plotOptions = {
+  grid: true,
+  marks: [
+    Plot.dot(filteredCars, {
+      x: "weight (lb)",
+      y: "power (hp)",
+      fill: "cylinders",
+      r: 4,
+      fillOpacity: 0.7,
+      tip: true
+    }),
+  ],
+  x: {
+    label: "Poids (lb)",
+  },
+  y: {
+    label: "Puissance (hp)",
+  },
+  title: `Relation Puissance vs Poids - Voitures 19${year}`,
+};
+
+// Configuration du graphique d'économie
+const economyPlotOptions = {
+  grid: true,
+  marks: [
+    Plot.rectY(filteredCars, Plot.binX({y: "count"}, {
+      x: "economy (mpg)"
+    })),
+  ],
+  x: {
+    label: "Économie de carburant (mpg)",
+  },
+  y: {
+    label: "Nombre de voitures",
+  },
+  title: `Distribution de l'économie de carburant - 19${year}`,
+};
+
+// Configuration du graphique cylindres
+const cylindersPlotOptions = {
+  grid: true,
+  marks: [
+    Plot.boxY(filteredCars, {
+      x: "cylinders",
+      y: "power (hp)",
+      fill: "cylinders",
+    }),
+  ],
+  x: {
+    label: "Nombre de cylindres",
+  },
+  y: {
+    label: "Puissance (hp)",
+  },
+  title: `Puissance par nombre de cylindres - 19${year}`,
+};
+---
+
+<Layout>
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="mb-6">
+      <a 
+        href="/cars-dynamique"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        ← Retour à la liste
+      </a>
+    </div>
+
+    <h1 class="text-3xl font-bold text-center mb-2">Voitures de l'année 19{year}</h1>
+    <p class="text-center text-gray-600 mb-8">{filteredCars.length} voiture(s) trouvée(s) pour l'année 19{year}</p>
+
+    <div class="grid gap-8">
+      <!-- Graphique principal : Puissance vs Poids -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <PlotFigure options={plotOptions} />
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Graphique d'économie -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <PlotFigure options={economyPlotOptions} />
+        </div>
+
+        <!-- Graphique cylindres -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <PlotFigure options={cylindersPlotOptions} />
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques supplémentaires -->
+    <div class="mt-8 bg-gray-50 rounded-lg p-6">
+      <h3 class="text-xl font-semibold mb-4">Statistiques pour 19{year}</h3>
+      <div class="grid md:grid-cols-4 gap-4 text-sm">
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Total voitures</div>
+          <div class="text-2xl font-bold text-blue-600">{filteredCars.length}</div>
+        </div>
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Puissance moyenne</div>
+          <div class="text-2xl font-bold text-green-600">
+            {Math.round(filteredCars.reduce((acc: number, car: any) => acc + car["power (hp)"], 0) / filteredCars.length)} hp
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Économie moyenne</div>
+          <div class="text-2xl font-bold text-orange-600">
+            {Math.round(filteredCars.reduce((acc: number, car: any) => acc + car["economy (mpg)"], 0) / filteredCars.length * 10) / 10} mpg
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded">
+          <div class="font-medium text-gray-700">Poids moyen</div>
+          <div class="text-2xl font-bold text-purple-600">
+            {Math.round(filteredCars.reduce((acc: number, car: any) => acc + car["weight (lb)"], 0) / filteredCars.length)} lb
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

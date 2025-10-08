@@ -10,8 +10,9 @@ import penguins from "../assets/penguins.json";
     <h1 class="text-3xl font-bold text-center mb-8">Test Astro et Plot (Observablehq)</h1>
     
     <div class="grid gap-6 mb-8">
+      <!-- Section Pingouins -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4">Navigation</h2>
+        <h2 class="text-xl font-semibold mb-4">🐧 Navigation Pingouins</h2>
         <div class="flex flex-wrap gap-4">
           <a 
             href="/slider"
@@ -30,6 +31,31 @@ import penguins from "../assets/penguins.json";
             class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             📄 Rendu statique par espèce
+          </a>
+        </div>
+      </div>
+
+      <!-- Section Voitures -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">🚗 Navigation Voitures</h2>
+        <div class="flex flex-wrap gap-4">
+          <a 
+            href="/cars-slider"
+            class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            📊 Vue d'ensemble années
+          </a>
+          <a 
+            href="/cars-dynamique"
+            class="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          >
+            🔍 Rendu dynamique par année
+          </a>
+          <a 
+            href="/cars-statique"
+            class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+          >
+            📄 Rendu statique par année
           </a>
         </div>
       </div>

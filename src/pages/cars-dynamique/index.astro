@@ -1,0 +1,60 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+// Import des données
+// @ts-ignore
+import carsData from "../../assets/cars.json";
+const cars = carsData as any;
+
+// Déterminer automatiquement la liste des années
+const years = [...new Set(cars.map((c: any) => c.year))].sort();
+---
+
+<Layout>
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-8">Liste des Années de Voitures (Rendu Dynamique)</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Sélectionnez une année :</h2>
+      
+      <ul class="space-y-3">
+        {years.map((year) => {
+          const yearCount = cars.filter((c: any) => c.year === year).length;
+          
+          return (
+            <li class="border-b border-gray-200 pb-3">
+              <a 
+                href={`/cars-dynamique/${year}`}
+                class="flex justify-between items-center p-3 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+              >
+                <div>
+                  <span class="text-lg font-medium text-blue-600 hover:text-blue-800">
+                    19{year}
+                  </span>
+                </div>
+                <div class="text-gray-500 text-sm">
+                  {yearCount} voitures
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+    
+    <div class="mt-6 text-center space-x-4">
+      <a 
+        href="/cars-slider"
+        class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        ← Vue d'ensemble
+      </a>
+      <a 
+        href="/cars-statique"
+        class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+      >
+        📄 Version statique
+      </a>
+    </div>
+  </div>
+</Layout>

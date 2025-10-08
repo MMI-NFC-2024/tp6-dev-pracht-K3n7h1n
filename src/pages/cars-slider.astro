@@ -1,0 +1,45 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Import des données
+// @ts-ignore
+import carsData from "../assets/cars.json";
+const cars = carsData as any;
+
+// Déterminer automatiquement la liste des années
+const years = [...new Set(cars.map((c: any) => c.year))].sort();
+---
+
+<Layout>
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-8">Liste des Années de Voitures</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <ul class="space-y-4">
+        {years.map((year) => {
+          const yearCount = cars.filter((c: any) => c.year === year).length;
+          
+          return (
+            <li class="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <div>
+                <h2 class="text-xl font-semibold text-blue-600">19{year}</h2>
+              </div>
+              <div class="text-gray-600">
+                {yearCount} voitures
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+    
+    <div class="mt-6 text-center">
+      <a 
+        href="/"
+        class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        ← Retour à l'accueil
+      </a>
+    </div>
+  </div>
+</Layout>
